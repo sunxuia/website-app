@@ -5,7 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>website-app</artifactId>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>website-app-dto</module>
+        <module>website-app-feignclient</module>
+        <module>website-app-service</module>
+    </modules>
 
     <parent>
         <groupId>net.sunxu.website</groupId>
