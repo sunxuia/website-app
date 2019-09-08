@@ -13,6 +13,8 @@ env:
     - secure: K4YxSTR3x/UKwT4S+HLfRYnyeX3K1sJ4vp9sdT2qCMtIHYx7p8mkjLCjoiMFTVkxzKhlWSdDKnOsHcFNDhEDiI1TnQ+itXkSs2pKHlctVexHfGUIHh3W7qFkUg6cTWu8+ZvZt7TlZYRuxCTS07BYXbt/StfMQV1CWuHQyyKBbGEdc+z/+nxm0UQYDnXnrfb9yY/PHpgKfTQLkozYRebZPcEyknxdvf2yaB6sk5B66KJzzX3Hkuu5ZezzDmriBYaeqb/oDBENedZqfOks+/JruzuZiLjyMGYzQYZTCh6zxWsq1bPO0xqYyLi6r9FggH82uIPelBMPLLfkYa+QghCSM3wVVMSmbD2Oc81J1lApWSSXlWf9Jzqz2OlXNdIxLDDSIcY93hOpBoku5dEoGzdfPm5NuRADnbterP2ODMvGzi8fXXVmBb7vP9Clz5He3yBkCvcCom7D+pdQUpmwx8Ay66EYXQ2WTAksDCvbkvTgv+FwSxeIPmdpXudTQT6HsIt9bV7yiVbvs2CV9J8Q+OKb6VCxGDUKNC/AXkonVDe9Szm/0rYTvEGilpj0OaY5A47S4oVpLZHMFh8m4cns+aQcAMO54YlNS2tz1ayBSy9lXM7myJ4J+iNN9D6HNIG4cSgwIZZksiDqxU/VFWGGB+df2Y+/Y/ROn2Uuog3sHuGmxfM=
     - secure: Z/3nyXJwn2hGoYjFaBk3n8ECjB/e7fmkrLjZAC/kSxUp3NrB3pqYctctcomppWGacitbVuN+i7PqOGB6O6U/M9nBu+avAm/HxCk4U1FSG4NMKI1uuRLTwU/3AuNQj6A50fvSKnE5PVjWLHuSE5G7opGWZlHqYWwKXKcW9YRR5ck/rJwr/BqHdyzxBIzAg8H9FCHe4mDlFHBnAqOlprRms7NatLObD+vM/w5wrMuP4tIBtSylEOy1j+iuRqOOz0oCXzG4A//qnGUa7nmI1nVkp5qPwlXeg+RGWFIPpajX9SlbhZ1VNzJmNrUpOLDXHJdheG89nuXQVkDE6Rw4TeqEoYpkrN3K3uVkaJLe2Nq1FuKK/YB7ZghGNmLZqP1rYO/LBZJcKmADI+Ct0TI05Nx6Y7w/8DsprTFgl49lMdPOCUCTzDq3NoCbl4jlXQYohtt/V6Bd9ghxIdlVyvNSW/bLLgq0WXFXajyQQ6vmNjJbKrnen/uMd/5vUjUHVKmaInmCQ6jrIVRyOLWKD9w+Jw2NUeqIhCDItuyhZ4MrzVZudXN5gPh3+MPNNtR5pcc3K0m8v6malmu1+BR/7+9IKzvJ8p/u9hT35iK6lorp6IBi1s8TWHrgy6lZyxt716JVQlox2ywcIfThYcbe5d27no9x6ofINhkwRoxS68llAEAbTbA=
 addons:
+  hosts:
+    - mysql-server
   sonarcloud:
     organization: sunxuia
     token:
@@ -20,6 +22,17 @@ addons:
   apt:
     packages:
       - docker-ce
+before_script:
+  - wget https://dev.mysql.com/get/mysql-apt-config_0.8.13-1_all.deb
+  - sudo dpkg -i mysql-apt-config_0.8.13-1_all.deb
+  - sudo apt-get update -q
+  - sudo apt-get install -q -y --allow-unauthenticated -o Dpkg::Options::=--force-confnew mysql-server
+  - sudo systemctl restart mysql
+  - sudo mysql_upgrade
+  - echo 'mysql version is ' `mysql --version`
+  - mysql -u root -e 'CREATE DATABASE tstdb;'
+  - mysql -u root -e "CREATE USER 'tstuser'@'localhost' IDENTIFIED BY '123456';"
+  - mysql -u root -e "GRANT ALL ON tstdb.* TO 'tstuser'@'localhost';"
 script:
   - chmod +x build.sh && ./build.sh
   - rm -f ~/.docker/config.json

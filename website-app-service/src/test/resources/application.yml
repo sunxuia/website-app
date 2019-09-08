@@ -1,0 +1,31 @@
+server:
+  servlet:
+    session.persistent: false
+spring:
+  application:
+    name: app-service
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://mysql-server:3306/tstdb?character=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=GMT%2B8
+    username: tstuser
+    password: 123456
+    platform: mysql
+    initialization-mode: always
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    properties.hibernate.format_sql: true
+website.key:
+  publicKeyPath: client.crt
+  publicKeyType: 'X.509'
+  privateKeyPath: key.keystore
+  password: '123456'
+  privateKeyType: PKCS12
+  alias: client
+
+logging:
+  level:
+    root: info
+    org.apache.coyote.http11.Http11InputBuffer: debug
