@@ -9,7 +9,6 @@ import net.sunxu.website.app.dto.AppInfoCreationResultDTO;
 import net.sunxu.website.app.service.bo.AppUserDetails;
 import net.sunxu.website.app.service.entity.AppInfo;
 import net.sunxu.website.app.service.repo.AppInfoRepo;
-import net.sunxu.website.help.exception.BizValidationException;
 import net.sunxu.website.help.util.ThreadPoolHelpUtils;
 import org.apache.commons.text.RandomStringGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +52,7 @@ public class AppDetailsServiceImpl implements AppDetailsService {
     @Override
     public AppInfoCreationResultDTO createAppInfo(String appName) {
         if (appInfoRepo.existsByAppNameIgnoreCase(appName)) {
-            throw BizValidationException.newException("%s name already exist", appName);
+            throw new RuntimeException(String.format("%s name already exist", appName));
         }
 
         AppInfo appInfo = new AppInfo();

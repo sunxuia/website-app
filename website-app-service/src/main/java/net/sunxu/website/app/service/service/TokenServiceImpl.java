@@ -15,7 +15,6 @@ import lombok.extern.log4j.Log4j2;
 import net.sunxu.website.app.dto.PublicKeyDTO;
 import net.sunxu.website.app.service.config.KeyProperties;
 import net.sunxu.website.app.service.entity.AppInfo;
-import net.sunxu.website.help.exception.BizValidationException;
 import net.sunxu.website.help.util.ObjectHelpUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
@@ -86,9 +85,13 @@ public class TokenServiceImpl implements TokenService {
         Map<String, String> res = new HashMap<>(paras.size());
         for (Map<String, Object> para : paras) {
             String tokenName = (String) para.get("tokenName");
-            BizValidationException.assertNotNull(tokenName, "token name not exist");
+            if (tokenName == null) {
+                throw new RuntimeException("token name not exist");
+            }
             Object expire = para.get("expire");
-            BizValidationException.assertNotNull(tokenName, "expire not exist");
+            if (expire == null) {
+                throw new RuntimeException("expire not exist");
+            }
 
             var builder = Jwts.builder().signWith(SignatureAlgorithm.RS256, privateKey);
             var now = new Date();
@@ -96,6 +99,7 @@ public class TokenServiceImpl implements TokenService {
             builder.setExpiration(new Date(now.getTime() + Long.parseLong("" + expire)));
             builder.setIssuer(applicationName);
             builder.setId(UUID.randomUUID().toString());
+            builder.setAudience(appInfo.getAppName());
 
             for (Entry<String, Object> entry : para.entrySet()) {
                 String keyName = entry.getKey();
